@@ -420,56 +420,7 @@ def Menu():
         clock.tick(60)
         pygame.display.flip() 
 
-#Tunel
-class Snowflake:
-    def __init__(self):
-        self.pos3=
-    def GenPos3(self):
-        pass
-    
-    
-    def Update(self):
-        pass
-    def Draw(self,window):
-        pass
-class Snow:
-    def __init__(self,snowCount):
-        self.snow=[Snowflake() for i in range(snowCount)]
-    def Run(self,window):
-        [snowflake.Update() for snowflake in self.snow]
-        [snowflake.Draw(window) for snowflake in self.snow]
-
-def F(x,y,z):
-    return(x/z,y/z)
-snow=Snow(100)   
-def FallingSnow():
-    while True:
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT:
-                return False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE: 
-                    return False
-        window.blit((255,255,255))
-        snow.Run(window)
-
-    
-        clock.tick(60)
-        pygame.display.flip() 
-
-
-
-
-
-
-
-
-
-
-
-
-
-GameRun=FallingSnow()#Menu()
+GameRun=sMenu()
 # Loop
 while GameRun:
     #Background
