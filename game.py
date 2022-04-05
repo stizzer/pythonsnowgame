@@ -420,7 +420,7 @@ def Menu():
         clock.tick(60)
         pygame.display.flip() 
 
-GameRun=sMenu()
+GameRun=Menu()
 # Loop
 while GameRun:
     #Background
