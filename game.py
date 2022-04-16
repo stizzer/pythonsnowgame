@@ -243,6 +243,11 @@ clock = pygame.time.Clock()
 pygame.display.set_icon(load_sprite('sprites\\logo.png'))
 
 
+#Pre Game
+window.fill((107,99,143))
+
+
+
 # Animations
 #e.load_animation('sprites\\character\\idle')
 load_animation('sprites\\character\\leftright')
@@ -296,8 +301,8 @@ def changemap(map):
 lightmap=load_sprite('sprites/map/light.png')
 lightmap.set_alpha(95)    
 backmap=load_sprite('sprites/map/back.png')
-nightmap=load_sprite('sprites/map/night.png')
-nightmap.set_alpha(150)    
+#nightmap=load_sprite('sprites/map/night.png')
+#nightmap.set_alpha(80    )    
 
 
 # Player
@@ -319,7 +324,7 @@ player.setpos(spawnpos[0],spawnpos[1])
 bear=Entity(1030,160,30,25,'bear')
 bear.set_action('sleep')
 gifts=[]
-gifts.append(Entity(1072,165,7,10,'gift'))
+gifts.append(Entity(1000,180,7,10,'gift'))
 gifts.append(Entity(1415,1055,7,10,'gift'))
 gifts.append(Entity(1420,1040,7,10,'gift'))
 gifts[0].set_action('red')
@@ -370,6 +375,42 @@ def drawText(text,Surface,pos,color,font,size):
 
 
 # Menu
+
+#Tunel
+class Snowflake:
+    def __init__(self):
+        self.pos3=self.GenPos3()
+        self.speed=random.randint(50,100)/1000
+        self.size=0.25
+        
+        
+    def GenPos3(self):
+        return [random.randint(1,win_size[0]),random.randint(1,win_size[1] ),-100.01]
+    
+    
+    def Update(self):
+        self.pos3[2]+=self.speed
+        if self.pos3[2]>=0:
+            self.pos3=self.GenPos3()
+        
+    def Draw(self,window):
+        a=self.size/(-  self.pos3[2])*100
+        pygame.draw.rect(window, (255,255,255),(self.pos3[0]/(-self.pos3[2])  ,self.pos3[1]/(-self.pos3[2]) ,a,a),0)
+        
+        
+class Snow:
+    def __init__(self,snowCount):
+        self.snow=[Snowflake() for i in range(snowCount)]
+    def Update(self):
+        [snowflake.Update() for snowflake in self.snow]
+     
+    def Run(self,window):
+        [snowflake.Update() for snowflake in self.snow]
+        [snowflake.Draw(window) for snowflake in self.snow]
+
+def F(x,y,z):
+    return(x/z,y/z)
+
 class Button:
     def __init__(self, x,y,sx,sy,sprite,csprite,action):
         self.x=x
@@ -396,9 +437,14 @@ start=False
 def stt():
     global start
     start=True
+snow=Snow(1000)   
+for i in range(1000):
+    snow.Update()
+
+
 def Menu():
-    Start=Button(100,100,400,100,None,None,stt)
-    Exit=Button(100,300,400,100,None,None,exit)
+    Start=Button(100,100+200,400,100,None,None,stt)
+    Exit=Button(100,300+200,400,100,None,None,exit)
     while True:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
@@ -409,16 +455,29 @@ def Menu():
         pos = pygame.mouse.get_pos()
         press = pygame.mouse.get_pressed()
         window.fill((107,99,143))
+        snow.Run(window)
         Start.ShowRect(window)
         Start.Update(pos,press)
-        drawText('Играть',window,(120,100),(100,255,200),'calibri',70)
+        drawText('Играть',window,(120,100+200),(100,255,200),'calibri',70)
         Exit.ShowRect(window)
         Exit.Update(pos,press)
-        drawText('Выход',window,(120,300),(255,100,100),'calibri',70)
+        drawText('Выход',window,(120,300+200),(255,100,100),'calibri',70)
         if start:
             return True
         clock.tick(60)
         pygame.display.flip() 
+
+
+
+
+
+
+
+
+
+
+
+
 
 GameRun=Menu()
 # Loop
@@ -487,7 +546,7 @@ while GameRun:
                 keyboardinput['up']=True
             if event.key==pygame.K_DOWN:
                 keyboardinput['down']=True
-            '''
+            
             if event.key==pygame.K_KP6:
                 player.setpos(player.x+100,player.y)
             if event.key==pygame.K_KP4:
@@ -496,15 +555,16 @@ while GameRun:
                 player.setpos(player.x,player.y-100)
             if event.key==pygame.K_KP2:
                 player.setpos(player.x,player.y+100)
+            
+            
             '''
-            
-            
             if event.key==pygame.K_w:
                 actualmap,spawnpos,staticcampos=changemap(lobbymap)
                 player.setpos(spawnpos[0],spawnpos[1])
             if event.key==pygame.K_a:
                 actualmap,spawnpos,staticcampos=changemap(map1)
                 player.setpos(spawnpos[0],spawnpos[1])
+            '''
             if event.key==pygame.K_c:
                 Hold=True
             if event.key==pygame.K_v:
@@ -602,6 +662,7 @@ while GameRun:
     tree.display(display,camera_position,False)
     
     # Snow
+    
     newSnows=[]
     for i in range(len(Snows)):
         Snows[i][0][0]+=Snows[i][1][0]
@@ -615,10 +676,10 @@ while GameRun:
     Snows=newSnows
     while len(Snows)<SnowOnScreenCount:
         Snows.append(GenerateSnow())
-
+    
 
     #Post Processing
-    display.blit(nightmap,(-camera_position[0],-camera_position[1]-16))
+    #display.blit(nightmap,(-camera_position[0],-camera_position[1]-16))
     display.blit(lightmap,(-camera_position[0],-camera_position[1]-16))
     
     
@@ -637,6 +698,7 @@ while GameRun:
     else:
         if Hold==False:
             drawText('Найдите подарок',window,(100,100),fontcolor,'calibri',fontsize)
+            drawText('(красный)',window,(100,170),(255,100,100),'calibri',fontsize-30)
         if Hold==True:
             drawText('Отнесите подарок к ёлке',window,(100,100),fontcolor,'calibri',fontsize)
         if Hold=='Done':
